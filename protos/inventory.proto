@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package inventory;
+
+service InventoryService {
+  // add an item to track
+  rpc TrackItem (TrackItemRequest) returns (TrackItemResponse);
+  // get all items
+  rpc GetUserInventory (GetUserInventoryRequest) returns (GetUserInventoryResponse);
+}
+
+message TrackItemRequest {
+  string steam_id = 1;
+  string market_hash_name = 2;
+}
+
+message TrackItemResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message GetUserInventoryRequest {
+  string steam_id = 1;
+}
+
+message GetUserInventoryResponse {
+  string steam_id = 1;
+  repeated string items = 2;
+}

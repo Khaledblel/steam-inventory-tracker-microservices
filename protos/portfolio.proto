@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package portfolio;
+
+service PortfolioService {
+  rpc GetPortfolio (GetPortfolioRequest) returns (GetPortfolioResponse);
+}
+
+message GetPortfolioRequest {
+  string steam_id = 1;
+}
+
+message Alert {
+  string market_hash_name = 1;
+  string alert_type = 2;
+  string message = 3;
+}
+
+message GetPortfolioResponse {
+  string steam_id = 1;
+  double total_net_worth = 2;
+  repeated Alert alerts = 3; 
+}
