@@ -39,6 +39,26 @@ app.get('/api/inventory/:steam_id', (req, res) => {
     });
 });
 
+app.put('/api/inventory', (req, res) => {
+    const { steam_id, old_market_hash_name, new_market_hash_name } = req.body;
+    console.log(`[REST] PUT /api/inventory -> Forwarding to gRPC ms-inventory`);
+    
+    inventoryClient.UpdateItem({ steam_id, old_market_hash_name, new_market_hash_name }, (err, response) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(200).json(response);
+    });
+});
+
+app.delete('/api/inventory', (req, res) => {
+    const { steam_id, market_hash_name } = req.body;
+    console.log(`[REST] DELETE /api/inventory -> Forwarding to gRPC ms-inventory`);
+    
+    inventoryClient.UntrackItem({ steam_id, market_hash_name }, (err, response) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.status(200).json(response);
+    });
+});
+
 app.get('/api/pricing/:market_hash_name', (req, res) => {
     const market_hash_name = req.params.market_hash_name;
     console.log(`[REST] GET /api/pricing/${market_hash_name} -> Forwarding to gRPC ms-pricing`);

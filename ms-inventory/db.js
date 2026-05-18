@@ -42,4 +42,28 @@ const getUserItemsFromDb = (steamId) => {
     });
 };
 
-module.exports = { trackItemInDb, getUserItemsFromDb };
+// Function to update an item
+const updateItemInDb = (steamId, oldName, newName) => {
+    return new Promise((resolve, reject) => {
+        db.run(`UPDATE user_items SET market_hash_name = ? WHERE steam_id = ? AND market_hash_name = ?`, 
+        [newName, steamId, oldName], 
+        function(err) {
+            if (err) reject(err);
+            resolve(this.changes);
+        });
+    });
+};
+
+// Function to delete an item
+const deleteItemFromDb = (steamId, itemName) => {
+    return new Promise((resolve, reject) => {
+        db.run(`DELETE FROM user_items WHERE steam_id = ? AND market_hash_name = ?`, 
+        [steamId, itemName], 
+        function(err) {
+            if (err) reject(err);
+            resolve(this.changes);
+        });
+    });
+};
+
+module.exports = { trackItemInDb, getUserItemsFromDb, updateItemInDb, deleteItemFromDb };

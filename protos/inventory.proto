@@ -3,10 +3,11 @@ syntax = "proto3";
 package inventory;
 
 service InventoryService {
-  // add an item to track
   rpc TrackItem (TrackItemRequest) returns (TrackItemResponse);
-  // get all items
   rpc GetUserInventory (GetUserInventoryRequest) returns (GetUserInventoryResponse);
+  
+  rpc UpdateItem (UpdateItemRequest) returns (UpdateItemResponse);
+  rpc UntrackItem (UntrackItemRequest) returns (UntrackItemResponse);
 }
 
 message TrackItemRequest {
@@ -26,4 +27,25 @@ message GetUserInventoryRequest {
 message GetUserInventoryResponse {
   string steam_id = 1;
   repeated string items = 2;
+}
+
+message UpdateItemRequest {
+  string steam_id = 1;
+  string old_market_hash_name = 2;
+  string new_market_hash_name = 3;
+}
+
+message UpdateItemResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message UntrackItemRequest {
+  string steam_id = 1;
+  string market_hash_name = 2;
+}
+
+message UntrackItemResponse {
+  bool success = 1;
+  string message = 2;
 }
