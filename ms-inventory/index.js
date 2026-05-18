@@ -44,8 +44,17 @@ async function updateItem(call, callback) {
     const { steam_id, old_market_hash_name, new_market_hash_name } = call.request;
     try {
         const changes = await updateItemInDb(steam_id, old_market_hash_name, new_market_hash_name);
-        if (changes > 0) callback(null, { success: true, message: `Updated to ${new_market_hash_name}` });
-        else callback(null, { success: false, message: `Item not found.` });
+        if (changes > 0) {
+            await producer.send({
+                topic: 'item-updated',
+                messages: [{ value: JSON.stringify({ steam_id, old_market_hash_name, new_market_hash_name }) }]
+            });
+            console.log(`[Kafka Producer] Sent event to 'item-updated'`);
+            
+            callback(null, { success: true, message: `Updated to ${new_market_hash_name}` });
+        } else {
+            callback(null, { success: false, message: `Item not found.` });
+        }
     } catch (err) { callback(err, null); }
 }
 
@@ -53,8 +62,17 @@ async function untrackItem(call, callback) {
     const { steam_id, market_hash_name } = call.request;
     try {
         const changes = await deleteItemFromDb(steam_id, market_hash_name);
-        if (changes > 0) callback(null, { success: true, message: `Stopped tracking ${market_hash_name}` });
-        else callback(null, { success: false, message: `Item not found.` });
+        if (changes > 0) {
+            await producer.send({
+                topic: 'item-untracked',
+                messages: [{ value: JSON.stringify({ steam_id, market_hash_name }) }]
+            });
+            console.log(`[Kafka Producer] Sent event to 'item-untracked'`);
+
+            callback(null, { success: true, message: `Stopped tracking ${market_hash_name}` });
+        } else {
+            callback(null, { success: false, message: `Item not found.` });
+        }
     } catch (err) { callback(err, null); }
 }
 
