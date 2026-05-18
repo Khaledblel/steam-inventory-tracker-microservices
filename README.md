@@ -6,7 +6,7 @@
 ![API: GraphQL](https://img.shields.io/badge/api-GraphQL-e10098)
 ![License: MIT](https://img.shields.io/badge/license-MIT-0b7285)
 
-A demo-first, event-driven microservices system for tracking Steam inventory items, simulating prices, and emitting real-time alerts. Built to be practical, hackable, and easy to reason about.
+A demo-first, event-driven microservices system for tracking Steam inventory items, simulating prices, and emitting real-time alerts.
 
 ## Project Status
 - WIP / demo-oriented. The services run locally and focus on showcasing service boundaries, gRPC calls, and Kafka event flow.
@@ -29,22 +29,22 @@ GraphQL portfolio queries and Discord alert samples from a local run:
 ## Architecture At A Glance
 ```mermaid
 flowchart LR
-	Client[Client / Demo Scripts]
-	Gateway[API Gateway\nREST + GraphQL :3000]
-	Inv[ms-inventory\ngRPC :50051\nSQLite]
-	Price[ms-pricing\ngRPC :50052\nRxDB (memory)]
-	Port[ms-portfolio\ngRPC :50053\nSQLite + Discord]
-	Kafka[(Kafka :29092)]
+  Client["Client / Demo Scripts"]
+  Gateway["API Gateway<br/>REST + GraphQL :3000"]
+  Inv["ms-inventory<br/>gRPC :50051<br/>SQLite"]
+  Price["ms-pricing<br/>gRPC :50052<br/>RxDB memory"]
+  Port["ms-portfolio<br/>gRPC :50053<br/>SQLite + Discord"]
+  Kafka[("Kafka :29092")]
 
-	Client -->|REST/GraphQL| Gateway
-	Gateway -->|gRPC| Inv
-	Gateway -->|gRPC| Price
-	Gateway -->|gRPC| Port
+  Client -->|REST/GraphQL| Gateway
+  Gateway -->|gRPC| Inv
+  Gateway -->|gRPC| Price
+  Gateway -->|gRPC| Port
 
-	Inv -->|item-tracked\nitem-updated\nitem-untracked| Kafka
-	Price -->|price-updated| Kafka
-	Kafka -->|item-tracked| Price
-	Kafka -->|item-tracked/updated/untracked\nprice-updated| Port
+  Inv -->|item-tracked<br/>item-updated<br/>item-untracked| Kafka
+  Price -->|price-updated| Kafka
+  Kafka -->|item-tracked| Price
+  Kafka -->|item-tracked/updated/untracked<br/>price-updated| Port
 ```
 
 ## Service Map
