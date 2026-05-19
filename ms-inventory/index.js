@@ -88,7 +88,6 @@ async function main() {
     server.bindAsync(`0.0.0.0:50051`, grpc.ServerCredentials.createInsecure(), (err, port) => {
         if (err) return console.error(err);
         console.log(`ms-inventory listening on gRPC port ${port}`);
-        server.start();
     });
 }
 main();

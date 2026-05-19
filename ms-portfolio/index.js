@@ -93,7 +93,6 @@ async function main() {
     server.bindAsync(`0.0.0.0:50053`, grpc.ServerCredentials.createInsecure(), (err, port) => {
         if (err) return console.error(err);
         console.log(`ms-portfolio listening on gRPC port ${port}`);
-        server.start();
     });
 }
 main();
