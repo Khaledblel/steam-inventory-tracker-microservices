@@ -1,18 +1,39 @@
-# Steam Inventory Tracker
-![Status: Demo WIP](https://img.shields.io/badge/status-demo%20%2F%20WIP-f4a261)
-![Runtime: Node 18+](https://img.shields.io/badge/runtime-node%2018%2B-339933)
-![Protocol: gRPC](https://img.shields.io/badge/protocol-gRPC-244c5a)
-![Messaging: Kafka](https://img.shields.io/badge/messaging-Kafka-231f20)
-![API: GraphQL](https://img.shields.io/badge/api-GraphQL-e10098)
-![License: MIT](https://img.shields.io/badge/license-MIT-0b7285)
+<h1 align="center">Steam Inventory Tracker</h1>
+<p align="center">A demo-first, event-driven microservices system for tracking Steam inventory items, simulating prices, and emitting real-time alerts.</p>
+<p align="center">
+	<img alt="Status: Demo WIP" src="https://img.shields.io/badge/status-demo%20%2F%20WIP-f4a261?style=for-the-badge" />
+	<img alt="Runtime: Node 18+" src="https://img.shields.io/badge/runtime-node%2018%2B-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" />
+	<img alt="Protocol: gRPC" src="https://img.shields.io/badge/protocol-gRPC-244c5a?style=for-the-badge" />
+	<img alt="Messaging: Kafka" src="https://img.shields.io/badge/messaging-Kafka-231f20?style=for-the-badge&logo=apachekafka&logoColor=white" />
+	<img alt="API: GraphQL" src="https://img.shields.io/badge/api-GraphQL-e10098?style=for-the-badge&logo=graphql&logoColor=white" />
+	<img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-0b7285?style=for-the-badge" />
+</p>
+<p align="center">
+	<a href="#quickstart">Quickstart</a> | <a href="#architecture-at-a-glance">Architecture</a> | <a href="#setup-and-run-local">Setup</a> | <a href="#usage">Usage</a> | <a href="#testing-manual">Testing</a>
+</p>
 
-A demo-first, event-driven microservices system for tracking Steam inventory items, simulating prices, and emitting real-time alerts.
+## Quickstart
+```bash
+docker-compose up -d
+npm install --prefix api-gateway
+npm install --prefix ms-inventory
+npm install --prefix ms-pricing
+npm install --prefix ms-portfolio
+```
+Run services in separate terminals:
+```bash
+node ms-inventory/index.js
+node ms-pricing/index.js
+node ms-portfolio/index.js
+node api-gateway/index.js
+```
+Open the GraphQL UI at http://localhost:3000/graphql.
 
 ## Project Status
 - WIP / demo-oriented. The services run locally and focus on showcasing service boundaries, gRPC calls, and Kafka event flow.
 - Pricing data is simulated (not pulled from Steam). This keeps the system deterministic and lightweight for demos.
 
-## What It Does
+## Highlights
 - Track Steam inventory items by user id.
 - Simulate price updates for tracked items.
 - Emit Kafka events for inventory changes and price updates.
@@ -22,9 +43,13 @@ A demo-first, event-driven microservices system for tracking Steam inventory ite
 ## Demo Snapshots
 GraphQL portfolio queries and Discord alert samples from a local run:
 
-![GraphQL portfolio query](images/graphql.png)
-![GraphQL portfolio with alerts](images/graphql2.png)
-![Discord price alert](images/steam.png)
+<table>
+	<tr>
+		<td><img src="images/graphql.png" width="320" alt="GraphQL portfolio query" /></td>
+		<td><img src="images/graphql2.png" width="320" alt="GraphQL portfolio with alerts" /></td>
+		<td><img src="images/steam.png" width="320" alt="Discord price alert" /></td>
+	</tr>
+</table>
 
 ## Architecture At A Glance
 ```mermaid
@@ -69,7 +94,7 @@ Typical sequence:
 4. ms-portfolio consumes events and can send a Discord notification.
 
 ## API Surface (Overview)
-This repo exposes three interfaces. Details and test commands are covered in the next README generation.
+This repo exposes three interfaces. Examples and test commands are below.
 
 ### REST (API Gateway)
 - Track inventory item
@@ -187,63 +212,72 @@ On first run, ms-portfolio inserts a demo alert for:
 docker-compose down
 ```
 
-## Usage (REST)
+## Usage
+<details>
+<summary>REST (API Gateway)</summary>
+
 All REST endpoints are exposed by the API Gateway on http://localhost:3000.
 
-### Track An Item
+#### Track An Item
 ```bash
 curl -X POST http://localhost:3000/api/inventory \
-	-H "Content-Type: application/json" \
-	-d '{"steam_id":"Khaled","market_hash_name":"AK-47 | Redline (Field-Tested)"}'
+  -H "Content-Type: application/json" \
+  -d '{"steam_id":"Khaled","market_hash_name":"AK-47 | Redline (Field-Tested)"}'
 ```
 
-### Get User Inventory
+#### Get User Inventory
 ```bash
 curl http://localhost:3000/api/inventory/Khaled
 ```
 
-### Update A Tracked Item
+#### Update A Tracked Item
 ```bash
 curl -X PUT http://localhost:3000/api/inventory \
-	-H "Content-Type: application/json" \
-	-d '{"steam_id":"Khaled","old_market_hash_name":"AK-47 | Redline (Field-Tested)","new_market_hash_name":"M4A1-S | Decimator (Field-Tested)"}'
+  -H "Content-Type: application/json" \
+  -d '{"steam_id":"Khaled","old_market_hash_name":"AK-47 | Redline (Field-Tested)","new_market_hash_name":"M4A1-S | Decimator (Field-Tested)"}'
 ```
 
-### Untrack An Item
+#### Untrack An Item
 ```bash
 curl -X DELETE http://localhost:3000/api/inventory \
-	-H "Content-Type: application/json" \
-	-d '{"steam_id":"Khaled","market_hash_name":"M4A1-S | Decimator (Field-Tested)"}'
+  -H "Content-Type: application/json" \
+  -d '{"steam_id":"Khaled","market_hash_name":"M4A1-S | Decimator (Field-Tested)"}'
 ```
 
-### Get Item Price
+#### Get Item Price
 ```bash
 curl "http://localhost:3000/api/pricing/AK-47%20%7C%20Redline%20(Field-Tested)"
 ```
+</details>
 
-## Usage (GraphQL)
+<details>
+<summary>GraphQL</summary>
+
 Open http://localhost:3000/graphql and run:
 ```graphql
 query GetPortfolio {
-	getPortfolio(steam_id: "Khaled") {
-		steam_id
-		total_value
-		items {
-			market_hash_name
-			current_price
-			currency
-			last_updated
-		}
-		alerts {
-			market_hash_name
-			alert_type
-			message
-		}
-	}
+  getPortfolio(steam_id: "Khaled") {
+    steam_id
+    total_value
+    items {
+      market_hash_name
+      current_price
+      currency
+      last_updated
+    }
+    alerts {
+      market_hash_name
+      alert_type
+      message
+    }
+  }
 }
 ```
+</details>
 
-## Usage (gRPC)
+<details>
+<summary>gRPC (grpcurl)</summary>
+
 You can call the internal services directly with grpcurl. This is optional but useful for validating service boundaries.
 
 Install grpcurl (one-time):
@@ -253,27 +287,36 @@ Install grpcurl (one-time):
 Examples (plain text):
 ```bash
 grpcurl -plaintext -import-path protos -proto inventory.proto \
-	localhost:50051 inventory.InventoryService/TrackItem \
-	-d '{"steam_id":"Khaled","market_hash_name":"AK-47 | Redline (Field-Tested)"}'
+  localhost:50051 inventory.InventoryService/TrackItem \
+  -d '{"steam_id":"Khaled","market_hash_name":"AK-47 | Redline (Field-Tested)"}'
 ```
 ```bash
 grpcurl -plaintext -import-path protos -proto inventory.proto \
-	localhost:50051 inventory.InventoryService/GetUserInventory \
-	-d '{"steam_id":"Khaled"}'
+  localhost:50051 inventory.InventoryService/GetUserInventory \
+  -d '{"steam_id":"Khaled"}'
 ```
 ```bash
 grpcurl -plaintext -import-path protos -proto pricing.proto \
-	localhost:50052 pricing.PricingService/GetItemPrice \
-	-d '{"market_hash_name":"AK-47 | Redline (Field-Tested)"}'
+  localhost:50052 pricing.PricingService/GetItemPrice \
+  -d '{"market_hash_name":"AK-47 | Redline (Field-Tested)"}'
 ```
 ```bash
 grpcurl -plaintext -import-path protos -proto portfolio.proto \
-	localhost:50053 portfolio.PortfolioService/GetPortfolio \
-	-d '{"steam_id":"Khaled"}'
+  localhost:50053 portfolio.PortfolioService/GetPortfolio \
+  -d '{"steam_id":"Khaled"}'
 ```
+</details>
 
-## Testing Guide (Manual)
-There are no automated tests yet. The following manual checks cover the full surface area.
+## Testing (Manual)
+There are no automated tests yet. Use the matrix below to validate the full surface area.
+
+| Area | Tool | Check |
+| --- | --- | --- |
+| REST | curl | Track, update, untrack, fetch inventory and price |
+| GraphQL | GraphiQL | getPortfolio returns items, prices, and alerts |
+| gRPC | grpcurl | InventoryService, PricingService, PortfolioService methods |
+| Kafka | kafka-console-consumer | item-tracked, item-updated, item-untracked, price-updated |
+| Discord | Webhook | Alerts arrive on track, update, price update |
 
 ### REST API Checks
 1. Track an item (POST /api/inventory)
