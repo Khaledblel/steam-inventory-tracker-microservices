@@ -105,6 +105,7 @@ This repo exposes three interfaces. Examples and test commands are below.
 
 ### GraphQL (API Gateway)
 - getPortfolio(steam_id): returns inventory items, latest prices, and alerts
+- trackItem(steam_id, market_hash_name): tracks an item via GraphQL
 
 ### gRPC (Internal Services)
 - InventoryService (TrackItem, GetUserInventory, UpdateItem, UntrackItem)
@@ -273,6 +274,16 @@ query GetPortfolio {
   }
 }
 ```
+
+Track an item with a mutation:
+```graphql
+mutation TrackItem {
+  trackItem(steam_id: "Khaled", market_hash_name: "AK-47 | Redline (Field-Tested)") {
+    success
+    message
+  }
+}
+```
 </details>
 
 <details>
@@ -326,8 +337,9 @@ There are no automated tests yet. Use the matrix below to validate the full surf
 5. Fetch pricing (GET /api/pricing/:market_hash_name)
 
 ### GraphQL Checks
-1. Run getPortfolio for the same steam_id
-2. Confirm items include prices and alerts are included
+1. Run trackItem to add an item via GraphQL
+2. Run getPortfolio for the same steam_id
+3. Confirm items include prices and alerts are included
 
 ### gRPC Checks
 1. Use grpcurl to call InventoryService methods
